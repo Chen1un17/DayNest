@@ -18,16 +18,7 @@ struct TodoCompletionButton: View {
                 .scaleEffect(celebrating && !reduceMotion ? 1 + 0.25 * (1 - phase) : 1)
                 .overlay {
                     if celebrating && !reduceMotion {
-                        ZStack {
-                            ForEach(0..<7) { index in
-                                let angle = Double(index) * .pi * 2 / 7
-                                Image(systemName: index.isMultiple(of: 2) ? "sparkle" : "circle.fill")
-                                    .font(.system(size: index.isMultiple(of: 2) ? 7 : 4))
-                                    .foregroundStyle(index.isMultiple(of: 2) ? Color.orange : accent)
-                                    .offset(x: cos(angle) * (8 + 20 * phase), y: sin(angle) * (8 + 20 * phase))
-                                    .opacity(Double(1 - phase))
-                            }
-                        }.allowsHitTesting(false).accessibilityHidden(true)
+                        particles
                     }
                 }
                 .frame(width: size + 6, height: size + 6)
@@ -52,5 +43,26 @@ struct TodoCompletionButton: View {
                 celebrating = false
             } catch { celebrating = false }
         }
+    }
+
+    private var particles: some View {
+        ZStack {
+            ForEach(0..<7) { index in
+                particle(index)
+            }
+        }
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+
+    private func particle(_ index: Int) -> some View {
+        let angle = Double(index) * .pi * 2 / 7
+        let radius = Double(8 + 20 * phase)
+        let isSparkle = index.isMultiple(of: 2)
+        return Image(systemName: isSparkle ? "sparkle" : "circle.fill")
+            .font(.system(size: isSparkle ? 7 : 4))
+            .foregroundStyle(isSparkle ? Color.orange : accent)
+            .offset(x: CGFloat(cos(angle) * radius), y: CGFloat(sin(angle) * radius))
+            .opacity(Double(1 - phase))
     }
 }
