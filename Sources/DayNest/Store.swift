@@ -35,7 +35,7 @@ final class Store: ObservableObject {
             storageError = "读取本地数据失败。为保护原文件，已暂停写入。请备份并检查 \(fileURL.path)：\(error.localizedDescription)"
         }
         timer = Timer.scheduledTimer(withTimeInterval: 30, repeats: true) { [weak self] _ in
-            Task { @MainActor in
+            Task { @MainActor [weak self] in
                 guard let self else { return }
                 self.now = Date()
                 if self.lastSyncAttempt.map({ Date().timeIntervalSince($0) > 21600 }) ?? true {
